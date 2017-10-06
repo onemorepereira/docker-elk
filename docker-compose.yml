@@ -3,9 +3,11 @@ version: '2'
 services:
 
   elasticsearch:
+    privileged: true
     build: elasticsearch/
     volumes:
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./data/elasticsearch/data:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -15,12 +17,15 @@ services:
       - elk
 
   logstash:
+    privileged: true
     build: logstash/
     volumes:
       - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
       - ./logstash/pipeline:/usr/share/logstash/pipeline
+      - ./data/logs:/consumption
     ports:
       - "5000:5000"
+      - "9600:9600"
     environment:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
@@ -29,6 +34,7 @@ services:
       - elasticsearch
 
   kibana:
+    privileged: true
     build: kibana/
     volumes:
       - ./kibana/config/:/usr/share/kibana/config
